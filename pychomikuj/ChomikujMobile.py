@@ -325,6 +325,43 @@ class ChomikujMobile:
             },
         ).json()
 
+    def account_query(self, query_field, page=1, media_type="All", extension=None):
+        endpoint = "api/v3/account/search"
+
+        query_for_hash = f"{urllib.parse.quote(query_field)}".replace("%20", "+")
+        if media_type == "Chomiki":
+            params = {"Query": query_field, "PageNumber": str(page)}
+            manual_param_data = f"?Query={query_for_hash}&PageNumber={page}"
+        elif extension != None:
+            params = {
+                "Extension": extension,
+                "Query": query_field,
+                "PageNumber": str(page),
+                "MediaType": media_type,
+            }
+            manual_param_data = f"?Extension={extension}&Query={query_for_hash}&PageNumber={page}&MediaType={media_type}"
+        else:
+            params = {
+                "Query": query_field,
+                "PageNumber": str(page),
+                "MediaType": media_type,
+            }
+            manual_param_data = (
+                f"?Query={query_for_hash}&PageNumber={page}&MediaType={media_type}"
+            )
+
+        logging.debug(
+            f"Executing query(). Endpoint={endpoint} query_for_hash={query_for_hash} param_data={params}"
+        )
+
+        return self.req_ses.get(
+            f"{self.API_LOCATION}{endpoint}",
+            params=params,
+            headers={
+                "Token": self.__hash_token(endpoint, manual_data=manual_param_data)
+            },
+        ).json()
+
     def get_friend_list(self, page=1):
         endpoint = "api/v3/friends"
         params = {"PageNumber": page}
