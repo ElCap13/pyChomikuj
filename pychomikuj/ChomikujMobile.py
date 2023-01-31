@@ -172,7 +172,7 @@ class ChomikujMobile:
             )
 
         self.get_account_balance()
-        return get_download_url_request.json()["FileUrl"]
+        return get_download_url_request.json()["FileUrl"], self.USER_AGENT
 
     def upload_file(self, file_path=None, folder_id=0):
         endpoint = "api/v3/files/upload/partialUpload"
