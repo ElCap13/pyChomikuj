@@ -238,6 +238,29 @@ class ChomikujMobile:
 
         return create_directory_request.json()["FolderId"]
 
+    def download_directory(self, account_id, folder_id):
+        endpoint = "api/v3/folders/download/items"
+        dict_data = {
+            "AccountId": str(account_id),
+            "FolderId": str(folder_id)
+        }
+
+        logging.debug(
+            f"Executing download_directory(). Endpoint={endpoint} dict_data={dict_data}"
+        )
+        
+        download_directory_request = self.req_ses.get(
+            f"{self.API_LOCATION}{endpoint}",
+            params=dict_data,
+            headers={"Token": self.__hash_token(endpoint, param_data=dict_data)},
+        )
+        if download_directory_request.status_code == 401:
+            raise PasswordProtectedDirectoryException(
+                "This directory is password protected!"
+            )
+
+        return download_directory_request.json()
+
     def delete_file(self, files=[], folders=[]):
         endpoint = "api/v3/files/delete"
         dict_data = '{"Files":FLS,"Folders":FLDRS}'
